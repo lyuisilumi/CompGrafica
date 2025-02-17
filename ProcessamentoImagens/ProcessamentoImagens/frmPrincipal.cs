@@ -26,7 +26,7 @@ namespace ProcessamentoImagens
             trackBarBrilho.Value = 100;
             trackBarMatiz.Value = 0;
             openFileDialog.FileName = "";
-            openFileDialog.Filter = "Arquivos de Imagem (*.jpg;*.gif;*.bmp;*.png)|*.jpg;*.gif;*.bmp;*.png";
+            openFileDialog.Filter = "Arquivos de Imagem (*.jpg;*.gif;*.bmp;*.png;*.jpeg)|*.jpg;*.gif;*.bmp;*.png;*.jpeg";
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
@@ -144,6 +144,16 @@ namespace ProcessamentoImagens
             imageBitmap = (Bitmap)image;
             Filtros.alterarMatiz(imageBitmap, imgDest, trackBarMatiz);
             pictBoxImg1.Image = imgDest;
+        }
+
+        private void btnMiniatura_Click(object sender, EventArgs e)
+        {
+            // Se a imagem não estiver carregada, não faz nada
+            if (imageBitmap == null) return;
+
+            // Criando e exibindo o formulário de miniaturas
+            FormMiniaturas formMiniaturas = new FormMiniaturas(imageBitmap);
+            formMiniaturas.Show();
         }
     }
 }
