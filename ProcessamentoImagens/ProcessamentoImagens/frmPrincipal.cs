@@ -25,11 +25,13 @@ namespace ProcessamentoImagens
             nUDmatiz.Value = 0;
             openFileDialog.FileName = "";
             openFileDialog.Filter = "Arquivos de Imagem (*.jpg;*.gif;*.bmp;*.png)|*.jpg;*.gif;*.bmp;*.png";
+
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                image = Image.FromFile(openFileDialog.FileName);
-                pictBoxImg1.Image = image;
-                pictBoxImg1.SizeMode = PictureBoxSizeMode.Normal;
+                image = new Bitmap(openFileDialog.FileName); // Garante que image não será null
+                imageBitmap = new Bitmap(image); // Atualiza imageBitmap corretamente
+                pictBoxImg1.Image = imageBitmap;
+                pictBoxImg1.SizeMode = PictureBoxSizeMode.Zoom; // Mantém a proporção sem perda de qualidade
             }
         }
 
@@ -41,8 +43,15 @@ namespace ProcessamentoImagens
 
         private void btnLuminanciaSemDMA_Click(object sender, EventArgs e)
         {
-            Bitmap imgDest = new Bitmap(image);
-            imageBitmap = (Bitmap)image;
+            if (image == null)
+            {
+                MessageBox.Show("Nenhuma imagem carregada!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            imageBitmap = new Bitmap(image); // Atualiza para garantir que temos um bitmap válido
+            Bitmap imgDest = new Bitmap(imageBitmap);
+
             Filtros.convert_to_gray(imageBitmap, imgDest);
             pictBoxImg1.Image = imgDest;
         }
@@ -56,55 +65,62 @@ namespace ProcessamentoImagens
 
         private void pictBoxImg1_MouseMove(object sender, MouseEventArgs e)
         {
-            imageBitmap = (Bitmap)image;
-            if(imageBitmap != null)
+            if (imageBitmap != null)
             {
-                int width = imageBitmap.Width;
-                int height = imageBitmap.Height;
-                int R, G, B,H,S,I;
-                double h,s,i, r, g, b,min;
-                if (e.X >= 0 && e.X < width && e.Y >= 0 && e.Y < height) {
-                    R = imageBitmap.GetPixel(e.X, e.Y).R;
-                    G = imageBitmap.GetPixel(e.X, e.Y).G;
-                    B = imageBitmap.GetPixel(e.X, e.Y).B;
-                    tbRed.Text = R.ToString();
-                    tbGreen.Text = G.ToString();
-                    tbBlue.Text = B.ToString();
-                    tbC.Text = (255 - R).ToString();
-                    tbM.Text = (255 - G).ToString();
-                    tbY.Text = (255 - B).ToString();
-                    tbMatiz.Text = ((int)imageBitmap.GetPixel(e.X, e.Y).GetHue()).ToString();
-                    tbSat.Text = ((int)imageBitmap.GetPixel(e.X, e.Y).GetSaturation()).ToString();
-                    tbLum.Text = ((int)imageBitmap.GetPixel(e.X, e.Y).GetBrightness()).ToString();
+                int imgWidth = imageBitmap.Width;
+                int imgHeight = imageBitmap.Height;
+                int boxWidth = pictBoxImg1.Width;
+                int boxHeight = pictBoxImg1.Height;
 
+                // Pegando os limites visíveis da imagem dentro do PictureBox
+                float imageAspect = (float)imgWidth / imgHeight;
+                float boxAspect = (float)boxWidth / boxHeight;
 
+                int drawWidth, drawHeight, offsetX, offsetY;
 
-                    /*r = R / (R + G + B);
-                    g = G / (R + G + B);
-                    b = B / (R + G + B);
-                    if(b <= g)
-                        h = Math.Acos((0.5 * ((r - g) + (r - b))) / Math.Sqrt(Math.Pow((r - g), 2) + (r - b) * (g - b)));
-                    else
-                        h = 2*3.1415 - Math.Acos((0.5 * ((r - g) + (r - b))) / Math.Sqrt(Math.Pow((r - g), 2) + (r - b) * (g - b)));
-                    if (r > g)
-                        min = g;
-                    else
-                        min = r;
-                    if (min < b)
-                        min = b;
-                    s = 1 - (3 * min);
-                    i = (R+G+B) / (3*255);
-               
-                    H = (int)((int)(h * 180) / Math.PI);
-                    S = (int)s * 100;
-                    I = (int)i * 255;
-                    tbMatiz.Text = H.ToString();
-                    tbSat.Text = S.ToString();
-                    tbLum.Text = I.ToString();*/
+                if (imageAspect > boxAspect)
+                {
+                    // A imagem se ajusta na largura do PictureBox
+                    drawWidth = boxWidth;
+                    drawHeight = (int)(boxWidth / imageAspect);
+                    offsetX = 0;
+                    offsetY = (boxHeight - drawHeight) / 2; // Centraliza verticalmente
+                }
+                else
+                {
+                    // A imagem se ajusta na altura do PictureBox
+                    drawHeight = boxHeight;
+                    drawWidth = (int)(boxHeight * imageAspect);
+                    offsetY = 0;
+                    offsetX = (boxWidth - drawWidth) / 2; // Centraliza horizontalmente
                 }
 
+                // Convertendo as coordenadas do mouse para a escala da imagem original
+                if (e.X >= offsetX && e.X < offsetX + drawWidth && e.Y >= offsetY && e.Y < offsetY + drawHeight)
+                {
+                    int imgX = (int)((e.X - offsetX) * (float)imgWidth / drawWidth);
+                    int imgY = (int)((e.Y - offsetY) * (float)imgHeight / drawHeight);
+
+                    Color pixelColor = imageBitmap.GetPixel(imgX, imgY);
+                    tbRed.Text = pixelColor.R.ToString();
+                    tbGreen.Text = pixelColor.G.ToString();
+                    tbBlue.Text = pixelColor.B.ToString();
+
+                    // Conversão para CMY
+                    int C = 255 - pixelColor.R;
+                    int M = 255 - pixelColor.G;
+                    int Y = 255 - pixelColor.B;
+
+                    tbC.Text = C.ToString();
+                    tbM.Text = M.ToString();
+                    tbY.Text = Y.ToString();
+
+                    // Conversão para HSI (caso precise)
+                    tbMatiz.Text = ((int)pixelColor.GetHue()).ToString();
+                    tbSat.Text = ((int)(pixelColor.GetSaturation() * 100)).ToString();
+                    tbLum.Text = ((int)(pixelColor.GetBrightness() * 255)).ToString();
+                }
             }
-            
         }
 
         private void nUDbrilho_ValueChanged(object sender, EventArgs e)
