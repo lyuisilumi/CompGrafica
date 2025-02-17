@@ -17,12 +17,14 @@ namespace ProcessamentoImagens
         public frmPrincipal()
         {
             InitializeComponent();
+            this.Size = new Size(1250, 768);
+            this.StartPosition = FormStartPosition.CenterScreen;
         }
 
         private void btnAbrirImagem_Click(object sender, EventArgs e)
         {
-            nUDbrilho.Value = 0;
-            nUDmatiz.Value = 0;
+            trackBarBrilho.Value = 100;
+            trackBarMatiz.Value = 0;
             openFileDialog.FileName = "";
             openFileDialog.Filter = "Arquivos de Imagem (*.jpg;*.gif;*.bmp;*.png)|*.jpg;*.gif;*.bmp;*.png";
 
@@ -123,20 +125,24 @@ namespace ProcessamentoImagens
             }
         }
 
-        private void nUDbrilho_ValueChanged(object sender, EventArgs e)
+        private void lbMatiz_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void trackBarBrilho_Scroll(object sender, EventArgs e)
         {
             Bitmap imgDest = new Bitmap(image);
             imageBitmap = (Bitmap)image;
-            Filtros.aumentar_reduzirBrilho(imageBitmap, imgDest,nUDbrilho);
+            Filtros.aumentar_reduzirBrilho(imageBitmap, imgDest, trackBarBrilho);
             pictBoxImg1.Image = imgDest;
         }
 
-        private void nUDmatiz_ValueChanged(object sender, EventArgs e)
+        private void trackBarMatiz_Scroll(object sender, EventArgs e)
         {
-
             Bitmap imgDest = new Bitmap(image);
             imageBitmap = (Bitmap)image;
-            Filtros.aumentar_reduzirMatiz(imageBitmap, imgDest, nUDmatiz);
+            Filtros.alterarMatiz(imageBitmap, imgDest, trackBarMatiz);
             pictBoxImg1.Image = imgDest;
         }
     }
