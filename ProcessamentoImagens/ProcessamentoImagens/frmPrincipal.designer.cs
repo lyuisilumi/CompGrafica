@@ -54,10 +54,11 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.trackBarBrilho = new System.Windows.Forms.TrackBar();
-            this.trackBarMatiz = new System.Windows.Forms.TrackBar();
+            this.tbBrilho = new System.Windows.Forms.TextBox();
+            this.nUDmatiz = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.pictBoxImg1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBrilho)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarMatiz)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUDmatiz)).BeginInit();
             this.SuspendLayout();
             // 
             // pictBoxImg1
@@ -196,6 +197,7 @@
             this.tbRed.Name = "tbRed";
             this.tbRed.Size = new System.Drawing.Size(91, 22);
             this.tbRed.TabIndex = 119;
+            this.tbRed.TextChanged += new System.EventHandler(this.tbRed_TextChanged);
             // 
             // tbGreen
             // 
@@ -299,22 +301,30 @@
             this.trackBarBrilho.Value = 100;
             this.trackBarBrilho.Scroll += new System.EventHandler(this.trackBarBrilho_Scroll);
             // 
-            // trackBarMatiz
+            // tbBrilho
             // 
-            this.trackBarMatiz.Location = new System.Drawing.Point(1049, 70);
-            this.trackBarMatiz.Maximum = 360;
-            this.trackBarMatiz.Name = "trackBarMatiz";
-            this.trackBarMatiz.Size = new System.Drawing.Size(219, 56);
-            this.trackBarMatiz.SmallChange = 5;
-            this.trackBarMatiz.TabIndex = 133;
-            this.trackBarMatiz.Scroll += new System.EventHandler(this.trackBarMatiz_Scroll);
+            this.tbBrilho.Enabled = false;
+            this.tbBrilho.Location = new System.Drawing.Point(954, 32);
+            this.tbBrilho.Name = "tbBrilho";
+            this.tbBrilho.Size = new System.Drawing.Size(63, 22);
+            this.tbBrilho.TabIndex = 134;
+            this.tbBrilho.TextChanged += new System.EventHandler(this.tbBrilho_TextChanged);
+            // 
+            // nUDmatiz
+            // 
+            this.nUDmatiz.Location = new System.Drawing.Point(1069, 73);
+            this.nUDmatiz.Name = "nUDmatiz";
+            this.nUDmatiz.Size = new System.Drawing.Size(120, 22);
+            this.nUDmatiz.TabIndex = 135;
+            this.nUDmatiz.ValueChanged += new System.EventHandler(this.nUDmatiz_ValueChanged);
             // 
             // frmPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1627, 748);
-            this.Controls.Add(this.trackBarMatiz);
+            this.Controls.Add(this.nUDmatiz);
+            this.Controls.Add(this.tbBrilho);
             this.Controls.Add(this.trackBarBrilho);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
@@ -347,7 +357,7 @@
             this.Load += new System.EventHandler(this.frmPrincipal_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictBoxImg1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBrilho)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarMatiz)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUDmatiz)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -381,7 +391,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TrackBar trackBarBrilho;
-        private System.Windows.Forms.TrackBar trackBarMatiz;
+        private System.Windows.Forms.TextBox tbBrilho;
+        private System.Windows.Forms.NumericUpDown nUDmatiz;
     }
 }
 
