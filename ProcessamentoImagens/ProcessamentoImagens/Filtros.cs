@@ -59,113 +59,134 @@ namespace ProcessamentoImagens
 
         }
 
-   
 
-        public static void aumentar_reduzirBrilho(Bitmap imageBitmapSrc, Bitmap imageBitmapDest ,NumericUpDown numUD)
+
+        public static void aumentar_reduzirBrilho(Bitmap imageBitmap, Bitmap imageBitmapDest, TrackBar trackBar)
         {
-            int width = imageBitmapSrc.Width;
-            int height = imageBitmapSrc.Height;
-            int r, g, b;
-            Int32 gs;
-            //double a = Math.Cos(Math.PI);
-            float novoBrilho;
+            int width = imageBitmap.Width;
+            int height = imageBitmap.Height;
+            float ajusteBrilho = (float)(trackBar.Value-100) / 100;  // Convertendo o valor para um intervalo de 0 a 2
 
-            for (int y = 0; y < height; y++)
+            BitmapData srcData = imageBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            BitmapData destData = imageBitmapDest.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            int stride = srcData.Stride;
+            IntPtr srcPtr = srcData.Scan0;
+            IntPtr destPtr = destData.Scan0;
+
+            unsafe
             {
-                for (int x = 0; x < width; x++)
+                byte* src = (byte*)srcPtr;
+                byte* dest = (byte*)destPtr;
+                for (int y = 0; y < height; y++)
                 {
-                    Color cor = imageBitmapSrc.GetPixel(x, y);
+                    for (int x = 0; x < width; x++)
+                    {
+                        int index = (y * stride) + (x * 3);
+                        byte b = src[index];
+                        byte g = src[index + 1];
+                        byte r = src[index + 2];
 
+                        // Ajuste de brilho direto nos componentes RGB
+                        int rNovo = (int)(r * (1 + ajusteBrilho));
+                        int gNovo = (int)(g * (1 + ajusteBrilho));
+                        int bNovo = (int)(b * (1 + ajusteBrilho));
 
-                    novoBrilho = cor.GetBrightness() + cor.GetBrightness() * ((float)numUD.Value) / 100;
-                    if (novoBrilho > 1)
-                        novoBrilho = 1;
-                    Color newcolor = RGBtoHSI(cor.GetHue(), cor.GetSaturation() * 100, novoBrilho * 255);
-                    //Color newcolor = RGBtoHSI(210, (float)33.3, (float)149.94);
+                        // Garantir que os valores estejam dentro dos limites válidos (0-255)
+                        rNovo = Math.Max(0, Math.Min(255, rNovo));
+                        gNovo = Math.Max(0, Math.Min(255, gNovo));
+                        bNovo = Math.Max(0, Math.Min(255, bNovo));
 
-                    imageBitmapDest.SetPixel(x, y, newcolor);
+                        // Definir o novo valor da cor ajustada
+                        dest[index] = (byte)bNovo;
+                        dest[index + 1] = (byte)gNovo;
+                        dest[index + 2] = (byte)rNovo;
+                    }
                 }
             }
+
+            imageBitmap.UnlockBits(srcData);
+            imageBitmapDest.UnlockBits(destData);
         }
 
-        public static void aumentar_reduzirMatiz(Bitmap imageBitmapSrc, Bitmap imageBitmapDest, NumericUpDown numUD)
+        public static void alterarMatiz(Bitmap imageBitmap, Bitmap imageBitmapDest, TrackBar trackBar)
         {
-            int width = imageBitmapSrc.Width;
-            int height = imageBitmapSrc.Height;
-            int r, g, b;
-            Int32 gs;
-            //double a = Math.Cos(Math.PI);
-            float novaMatiz;
+            int width = imageBitmap.Width;
+            int height = imageBitmap.Height;
 
-            for (int y = 0; y < height; y++)
+            // Ajuste da matiz baseado no valor do TrackBar.
+            float ajusteMatiz = trackBar.Value; // 0 a 360 ou -180 a 180 dependendo da configuração do TrackBar.
+
+            BitmapData srcData = imageBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            BitmapData destData = imageBitmapDest.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            int stride = srcData.Stride;
+            IntPtr srcPtr = srcData.Scan0;
+            IntPtr destPtr = destData.Scan0;
+
+            unsafe
             {
-                for (int x = 0; x < width; x++)
+                byte* src = (byte*)srcPtr;
+                byte* dest = (byte*)destPtr;
+                for (int y = 0; y < height; y++)
                 {
-                    Color cor = imageBitmapSrc.GetPixel(x, y);
+                    for (int x = 0; x < width; x++)
+                    {
+                        int index = (y * stride) + (x * 3);
+                        byte b = src[index];
+                        byte g = src[index + 1];
+                        byte r = src[index + 2];
 
+                        // Converter a cor RGB para HSB
+                        float hue = Color.FromArgb(r, g, b).GetHue();
+                        float saturation = Color.FromArgb(r, g, b).GetSaturation();
+                        float brightness = Color.FromArgb(r, g, b).GetBrightness();
 
-                    novaMatiz  =  (float)numUD.Value;
-                    Color newcolor = RGBtoHSI(novaMatiz, cor.GetSaturation() * 100, cor.GetBrightness() * 255);
-                    //Color newcolor = RGBtoHSI(210, (float)33.3, (float)149.94);
+                        // Ajustar a matiz (hue)
+                        hue += ajusteMatiz;
+                        if (hue > 360) hue -= 360;
+                        if (hue < 0) hue += 360;
 
-                    imageBitmapDest.SetPixel(x, y, newcolor);
+                        // Converter de volta para RGB
+                        Color newColor = ColorFromHSV(hue, saturation, brightness);
+
+                        dest[index] = newColor.B;
+                        dest[index + 1] = newColor.G;
+                        dest[index + 2] = newColor.R;
+                    }
                 }
             }
+
+            imageBitmap.UnlockBits(srcData);
+            imageBitmapDest.UnlockBits(destData);
         }
 
-        private static Color RGBtoHSI(float H, float S, float I)
+        public static Color ColorFromHSV(float hue, float saturation, float brightness)
         {
-            float h = H * ((float)Math.PI) / 180;
-            float s = S / 100;
-            float i = I / 255;
+            // Limitar os valores de hue, saturation, brightness para garantir que não estejam fora dos limites
+            hue = hue % 360;
+            saturation = Math.Max(0, Math.Min(1, saturation));
+            brightness = Math.Max(0, Math.Min(1, brightness));
 
-            float x, y, z;
+            int hi = (int)(hue / 60) % 6;
+            float f = hue / 60 - (int)(hue / 60);
+            float p = brightness * (1 - saturation);
+            float q = brightness * (1 - f * saturation);
+            float t = brightness * (1 - (1 - f) * saturation);
 
-            if(h < (2 *(float)Math.PI) / 3)
+            float r = 0, g = 0, b = 0;
+
+            switch (hi)
             {
-                x = i * (1 - s);
-                y = i * (1 + (s * ((float)Math.Cos(h)) / ((float)Math.Cos(((float)Math.PI / 3) - h))));
-                z = 3 * i - (x + y);
-                if(x>1)
-                    x = 1;
-                if(y>1)
-                    y = 1;
-                if(z>1) 
-                    z = 1;
-                return Color.FromArgb((int)(y * 255), (int)(z * 255), (int)(x * 255));
+                case 0: r = brightness; g = t; b = p; break;
+                case 1: r = q; g = brightness; b = p; break;
+                case 2: r = p; g = brightness; b = t; break;
+                case 3: r = p; g = q; b = brightness; break;
+                case 4: r = t; g = p; b = brightness; break;
+                case 5: r = brightness; g = p; b = q; break;
             }
-            else if ((2 * (float)Math.PI) / 3 <= h  && h< (4 * (float)Math.PI) / 3)
-            {
-                h = h - (2 * (float)Math.PI) / 3;
 
-                x = i * (1 - s);
-                y = i * (1 + (s * ((float)Math.Cos(h)) / ((float)Math.Cos((((float)Math.PI) / 3) - h))));
-                z = 3 * i - (x + y);
-                if (x > 1)
-                    x = 1;
-                if (y > 1)
-                    y = 1;
-                if (z > 1)
-                    z = 1;
-                return Color.FromArgb((int)(x * 255), (int)(y * 255), (int)(z * 255));
-
-            }else if ((4 * (float)Math.PI) / 3 <= h && h< 2 * (float)Math.PI)
-            {
-                h = h - (4 * (float)Math.PI) / 3;
-
-                x = i * (1 - s);
-                y = i * (1 + (s * ((float)Math.Cos(h)) / ((float)Math.Cos((((float)Math.PI) / 3) - h))));
-                z = 3 * i - (x + y);
-                if (x > 1)
-                    x = 1;
-                if (y > 1)
-                    y = 1;
-                if (z > 1)
-                    z = 1;
-                return Color.FromArgb((int)(z * 255), (int)(x * 255), (int)(y * 255));
-            }
-            return Color.FromArgb(255,255,255);
-
+            return Color.FromArgb((int)(r * 255), (int)(g * 255), (int)(b * 255));
         }
 
 
