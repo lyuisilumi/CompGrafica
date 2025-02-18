@@ -17,49 +17,55 @@ namespace ProcessamentoImagens
         {
             int width = imageBitmapSrc.Width;
             int height = imageBitmapSrc.Height;
-            int r, g, b;
-            Int32 gs;
 
-            for (int y = 0; y < height; y++)
+            // Bloquear os bits das imagens para acesso direto à memória
+            BitmapData srcData = imageBitmapSrc.LockBits(
+                new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadOnly,
+                PixelFormat.Format24bppRgb);
+
+            BitmapData destData = imageBitmapDest.LockBits(
+                new Rectangle(0, 0, width, height),
+                ImageLockMode.WriteOnly,
+                PixelFormat.Format24bppRgb);
+
+            int stride = srcData.Stride; // Largura real da linha de pixels (considera alinhamento de memória)
+            int bytesPerPixel = 3; // Formato 24bpp (RGB)
+
+            unsafe
             {
-                for (int x = 0; x < width; x++)
+                byte* srcPtr = (byte*)srcData.Scan0;
+                byte* destPtr = (byte*)destData.Scan0;
+
+                for (int y = 0; y < height; y++)
                 {
-                    Color cor = imageBitmapSrc.GetPixel(x, y);
+                    byte* srcRow = srcPtr + (y * stride);
+                    byte* destRow = destPtr + (y * stride);
 
-                    r = cor.R;
-                    g = cor.G;
-                    b = cor.B;
-                    gs = (Int32)(r * 0.2990 + g * 0.5870 + b * 0.1140);
+                    for (int x = 0; x < width; x++)
+                    {
+                        // Os valores são armazenados em BGR (ordem invertida)
+                        byte b = srcRow[x * bytesPerPixel];
+                        byte g = srcRow[x * bytesPerPixel + 1];
+                        byte r = srcRow[x * bytesPerPixel + 2];
 
-                    Color newcolor = Color.FromArgb(gs, gs, gs);
+                        // Calcular o tom de cinza
+                        byte gray = (byte)(r * 0.299 + g * 0.587 + b * 0.114);
 
-                    imageBitmapDest.SetPixel(x, y, newcolor);
+                        // Substituir valores no destino
+                        destRow[x * bytesPerPixel] = gray;      // Azul (B)
+                        destRow[x * bytesPerPixel + 1] = gray;  // Verde (G)
+                        destRow[x * bytesPerPixel + 2] = gray;  // Vermelho (R)
+                    }
                 }
             }
+
+            // Desbloquear os bits após processamento
+            imageBitmapSrc.UnlockBits(srcData);
+            imageBitmapDest.UnlockBits(destData);
         }
-
-        public static void convert_to_move(Bitmap imageBitmapSrc, MouseEventArgs e, TextBox tbR, TextBox tbG, TextBox tbB,TextBox tbMatiz, TextBox tbLum, TextBox tbSat)
-        {
-            int width = imageBitmapSrc.Width;
-            int height = imageBitmapSrc.Height;
-            int x = e.X;
-            int y = e.Y;
-
-            if (x >= 0 && x < width && y >= 0 && y < height)
-            {
-                Color cor = imageBitmapSrc.GetPixel(x, y);
-                tbR.Text = cor.R.ToString();
-                tbG.Text = cor.G.ToString();
-                tbB.Text = cor.B.ToString();
-
-
-
-            }
-
-
-
-        }
-        public static void aumentar_reduzirBrilho(Bitmap imageBitmap, Bitmap imageBitmapDest, TrackBar trackBar, int valorBrilho)
+      
+        public static void aumentar_reduzirBrilho(Bitmap imageBitmap, Bitmap imageBitmapDest, TrackBar trackBar)
         {
             int width = imageBitmap.Width;
             int height = imageBitmap.Height;
