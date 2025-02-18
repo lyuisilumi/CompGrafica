@@ -59,13 +59,13 @@ namespace ProcessamentoImagens
 
 
         }
-        public static void aumentar_reduzirBrilho(Bitmap imageBitmap, Bitmap imageBitmapDest, TrackBar trackBar)
+        public static void aumentar_reduzirBrilho(Bitmap imageBitmap, Bitmap imageBitmapDest, TrackBar trackBar, int valorBrilho)
         {
             int width = imageBitmap.Width;
             int height = imageBitmap.Height;
 
             // Ajuste de brilho: mapeando 100 para sem alteração e valores abaixo de 100 para redução de brilho
-            float ajusteBrilho = (float)(trackBar.Value - 100) / 100;  // Ajusta o brilho com base em 100 como base
+            float ajusteBrilho = (float)(trackBar.Value + valorBrilho - 100) / 100;  // Ajusta o brilho com base em 100 como base
 
             BitmapData srcData = imageBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
             BitmapData destData = imageBitmapDest.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);

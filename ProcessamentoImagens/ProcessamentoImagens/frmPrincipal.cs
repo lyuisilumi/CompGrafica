@@ -13,7 +13,7 @@ namespace ProcessamentoImagens
     {
         private Image image;
         private Bitmap imageBitmap;
-        private int valorMatiz;
+        private int valorMatiz, valorBrilho;
 
         public frmPrincipal()
         {
@@ -27,6 +27,7 @@ namespace ProcessamentoImagens
             trackBarBrilho.Value = 100;
             nUDmatiz.Value = 0;
             valorMatiz = 0;
+            valorBrilho = 100;
             tbBrilho.Text = "100";
             openFileDialog.FileName = "";
             openFileDialog.Filter = "Arquivos de Imagem (*.jpg;*.gif;*.bmp;*.png)|*.jpg;*.gif;*.bmp;*.png";
@@ -137,8 +138,12 @@ namespace ProcessamentoImagens
         {
             Bitmap imgDest = new Bitmap(image);
             imageBitmap = (Bitmap)image;
+
+            int calculoBrilho = (int)trackBarBrilho.Value - valorBrilho;
+            valorBrilho = (int)trackBarBrilho.Value;
+
             tbBrilho.Text = trackBarBrilho.Value.ToString();
-            Filtros.aumentar_reduzirBrilho(imageBitmap, imgDest, trackBarBrilho);
+            Filtros.aumentar_reduzirBrilho(imageBitmap, imgDest, trackBarBrilho, calculoBrilho);
             pictBoxImg1.Image = imgDest;
             imageBitmap = imgDest;
         }
@@ -159,6 +164,7 @@ namespace ProcessamentoImagens
             valorMatiz = (int)nUDmatiz.Value;
             imageBitmap = Filtros.aumentar_reduzirMatiz(imageBitmap, calculoMatiz);
             pictBoxImg1.Image = imageBitmap;
+            image = (Image)imageBitmap;
         }
     }
 }
