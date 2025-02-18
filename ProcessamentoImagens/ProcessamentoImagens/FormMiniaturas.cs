@@ -133,7 +133,8 @@ namespace ProcessamentoImagens
 
                     // conversão RGB para HSI
                     float hue, saturation, intensity;
-                    RGBtoHSI(r, g, b, out hue, out saturation, out intensity);
+                    Filtros.RgbToHsl(Color.FromArgb(r, g, b), out hue, out saturation, out intensity);
+                    
 
                     int grayValue = 0;
                     switch (channel)
@@ -169,37 +170,7 @@ namespace ProcessamentoImagens
         }
 
 
-        // Função para conversão de RGB para HSI
-        private void RGBtoHSI(int r, int g, int b, out float h, out float s, out float i)
-        {
-            // Conversão de RGB para HSI
-            float R = r / 255f;
-            float G = g / 255f;
-            float B = b / 255f;
-
-            float min = Math.Min(Math.Min(R, G), B);
-            float max = Math.Max(Math.Max(R, G), B);
-            float delta = max - min;
-
-            // Intensity
-            i = (max + min) / 2;
-
-            // Saturation
-            s = (max == 0) ? 0 : (1 - min / max);
-
-            // Hue
-            if (delta == 0)
-                h = 0;
-            else if (max == R)
-                h = (G - B) / delta;
-            else if (max == G)
-                h = (B - R) / delta + 2;
-            else
-                h = (R - G) / delta + 4;
-
-            h *= 60;
-            if (h < 0) h += 360;
-        }
+        
     }
 
 }

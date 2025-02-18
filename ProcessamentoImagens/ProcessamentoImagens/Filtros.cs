@@ -195,7 +195,8 @@ namespace ProcessamentoImagens
             return newImage;
         }
 
-        private static void RgbToHsl(Color color, out float h, out float s, out float l)
+        //troquei private pra public
+        public static void RgbToHsl(Color color, out float h, out float s, out float l)
         {
             float r = color.R / 255f;
             float g = color.G / 255f;
