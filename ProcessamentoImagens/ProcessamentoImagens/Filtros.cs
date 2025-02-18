@@ -140,7 +140,7 @@ namespace ProcessamentoImagens
                 RgbToHsl(Color.FromArgb(r, g, b), out h, out s, out l);
 
                 // Ajusta a matiz
-                h = (h + hueShift) % 360;
+                h = (h + hueShift+360) % 360;
                 if (h < 0) h += 360;
 
                 // Converte de volta para RGB

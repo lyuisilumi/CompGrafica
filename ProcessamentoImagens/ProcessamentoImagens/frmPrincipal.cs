@@ -137,6 +137,7 @@ namespace ProcessamentoImagens
         {
             Bitmap imgDest = new Bitmap(image);
             imageBitmap = (Bitmap)image;
+            tbBrilho.Text = trackBarBrilho.Value.ToString();
             Filtros.aumentar_reduzirBrilho(imageBitmap, imgDest, trackBarBrilho);
             pictBoxImg1.Image = imgDest;
             imageBitmap = imgDest;

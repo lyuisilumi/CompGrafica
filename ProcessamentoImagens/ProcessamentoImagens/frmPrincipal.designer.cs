@@ -303,9 +303,9 @@
             // 
             // tbBrilho
             // 
-            this.tbBrilho.Enabled = false;
             this.tbBrilho.Location = new System.Drawing.Point(954, 32);
             this.tbBrilho.Name = "tbBrilho";
+            this.tbBrilho.ReadOnly = true;
             this.tbBrilho.Size = new System.Drawing.Size(63, 22);
             this.tbBrilho.TabIndex = 134;
             this.tbBrilho.TextChanged += new System.EventHandler(this.tbBrilho_TextChanged);
