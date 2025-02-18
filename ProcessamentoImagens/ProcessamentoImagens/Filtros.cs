@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.InteropServices;
 
 namespace ProcessamentoImagens
 {
@@ -63,12 +64,14 @@ namespace ProcessamentoImagens
             imageBitmapSrc.UnlockBits(srcData);
             imageBitmapDest.UnlockBits(destData);
         }
-
+      
         public static void aumentar_reduzirBrilho(Bitmap imageBitmap, Bitmap imageBitmapDest, TrackBar trackBar)
         {
             int width = imageBitmap.Width;
             int height = imageBitmap.Height;
-            float ajusteBrilho = (float)(trackBar.Value-100) / 100;  // Convertendo o valor para um intervalo de 0 a 2
+
+            // Ajuste de brilho: mapeando 100 para sem alteração e valores abaixo de 100 para redução de brilho
+            float ajusteBrilho = (float)(trackBar.Value - 100) / 100;  // Ajusta o brilho com base em 100 como base
 
             BitmapData srcData = imageBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
             BitmapData destData = imageBitmapDest.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
@@ -112,84 +115,121 @@ namespace ProcessamentoImagens
             imageBitmapDest.UnlockBits(destData);
         }
 
-        public static void alterarMatiz(Bitmap imageBitmap, Bitmap imageBitmapDest, TrackBar trackBar)
+
+
+        public static Bitmap aumentar_reduzirMatiz(Bitmap image, float hueShift)
         {
-            int width = imageBitmap.Width;
-            int height = imageBitmap.Height;
+            Bitmap newImage = new Bitmap(image.Width, image.Height);
+            Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
 
-            // Ajuste da matiz baseado no valor do TrackBar.
-            float ajusteMatiz = trackBar.Value; // 0 a 360 ou -180 a 180 dependendo da configuração do TrackBar.
+            // Bloqueia os bits da imagem original e da nova imagem
+            BitmapData dataSrc = image.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            BitmapData dataDst = newImage.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
 
-            BitmapData srcData = imageBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-            BitmapData destData = imageBitmapDest.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+            int bytes = Math.Abs(dataSrc.Stride) * image.Height;
+            byte[] pixelBuffer = new byte[bytes];
+            byte[] resultBuffer = new byte[bytes];
 
-            int stride = srcData.Stride;
-            IntPtr srcPtr = srcData.Scan0;
-            IntPtr destPtr = destData.Scan0;
+            // Copia os bytes da imagem para o buffer
+            Marshal.Copy(dataSrc.Scan0, pixelBuffer, 0, bytes);
+            image.UnlockBits(dataSrc);
 
-            unsafe
+            for (int i = 0; i < bytes; i += 3)
             {
-                byte* src = (byte*)srcPtr;
-                byte* dest = (byte*)destPtr;
-                for (int y = 0; y < height; y++)
-                {
-                    for (int x = 0; x < width; x++)
-                    {
-                        int index = (y * stride) + (x * 3);
-                        byte b = src[index];
-                        byte g = src[index + 1];
-                        byte r = src[index + 2];
+                // Extrai os valores RGB
+                byte b = pixelBuffer[i];
+                byte g = pixelBuffer[i + 1];
+                byte r = pixelBuffer[i + 2];
 
-                        // Converter a cor RGB para HSB
-                        float hue = Color.FromArgb(r, g, b).GetHue();
-                        float saturation = Color.FromArgb(r, g, b).GetSaturation();
-                        float brightness = Color.FromArgb(r, g, b).GetBrightness();
+                // Converte para HSL
+                float h, s, l;
+                RgbToHsl(Color.FromArgb(r, g, b), out h, out s, out l);
 
-                        // Ajustar a matiz (hue)
-                        hue += ajusteMatiz;
-                        if (hue > 360) hue -= 360;
-                        if (hue < 0) hue += 360;
+                // Ajusta a matiz
+                h = (h + hueShift+360) % 360;
+                if (h < 0) h += 360;
 
-                        // Converter de volta para RGB
-                        Color newColor = ColorFromHSV(hue, saturation, brightness);
+                // Converte de volta para RGB
+                Color newColor = HslToRgb(h, s, l);
 
-                        dest[index] = newColor.B;
-                        dest[index + 1] = newColor.G;
-                        dest[index + 2] = newColor.R;
-                    }
-                }
+                // Armazena os novos valores no buffer de saída
+                resultBuffer[i] = newColor.B;
+                resultBuffer[i + 1] = newColor.G;
+                resultBuffer[i + 2] = newColor.R;
             }
 
-            imageBitmap.UnlockBits(srcData);
-            imageBitmapDest.UnlockBits(destData);
+            // Copia os dados processados de volta para a nova imagem
+            Marshal.Copy(resultBuffer, 0, dataDst.Scan0, bytes);
+            newImage.UnlockBits(dataDst);
+
+            return newImage;
         }
 
-        public static Color ColorFromHSV(float hue, float saturation, float brightness)
+        private static void RgbToHsl(Color color, out float h, out float s, out float l)
         {
-            // Limitar os valores de hue, saturation, brightness para garantir que não estejam fora dos limites
-            hue = hue % 360;
-            saturation = Math.Max(0, Math.Min(1, saturation));
-            brightness = Math.Max(0, Math.Min(1, brightness));
+            float r = color.R / 255f;
+            float g = color.G / 255f;
+            float b = color.B / 255f;
 
-            int hi = (int)(hue / 60) % 6;
-            float f = hue / 60 - (int)(hue / 60);
-            float p = brightness * (1 - saturation);
-            float q = brightness * (1 - f * saturation);
-            float t = brightness * (1 - (1 - f) * saturation);
+            float max = Math.Max(r, Math.Max(g, b));
+            float min = Math.Min(r, Math.Min(g, b));
 
-            float r = 0, g = 0, b = 0;
+            l = (max + min) / 2;
+            float delta = max - min;
 
-            switch (hi)
+            if (delta == 0)
             {
-                case 0: r = brightness; g = t; b = p; break;
-                case 1: r = q; g = brightness; b = p; break;
-                case 2: r = p; g = brightness; b = t; break;
-                case 3: r = p; g = q; b = brightness; break;
-                case 4: r = t; g = p; b = brightness; break;
-                case 5: r = brightness; g = p; b = q; break;
+                h = 0;
+                s = 0;
+            }
+            else
+            {
+                s = (l > 0.5) ? delta / (2 - max - min) : delta / (max + min);
+
+                if (max == r)
+                    h = (g - b) / delta + (g < b ? 6 : 0);
+                else if (max == g)
+                    h = (b - r) / delta + 2;
+                else
+                    h = (r - g) / delta + 4;
+
+                h *= 60;
+            }
+        }
+
+        private static Color HslToRgb(float h, float s, float l)
+        {
+            float r, g, b;
+
+            if (s == 0)
+            {
+                r = g = b = l;
+            }
+            else
+            {
+                float q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                float p = 2 * l - q;
+
+                r = HueToRgb(p, q, h + 120);
+                g = HueToRgb(p, q, h);
+                b = HueToRgb(p, q, h - 120);
             }
 
-            return Color.FromArgb((int)(r * 255), (int)(g * 255), (int)(b * 255));
+            return Color.FromArgb(
+                (int)(r * 255),
+                (int)(g * 255),
+                (int)(b * 255)
+            );
+        }
+
+        private static float HueToRgb(float p, float q, float t)
+        {
+            if (t < 0) t += 360;
+            if (t > 360) t -= 360;
+            if (t < 60) return p + (q - p) * t / 60;
+            if (t < 180) return q;
+            if (t < 240) return p + (q - p) * (240 - t) / 60;
+            return p;
         }
 
 

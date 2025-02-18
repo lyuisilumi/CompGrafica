@@ -13,6 +13,7 @@ namespace ProcessamentoImagens
     {
         private Image image;
         private Bitmap imageBitmap;
+        private int valorMatiz;
 
         public frmPrincipal()
         {
@@ -24,7 +25,9 @@ namespace ProcessamentoImagens
         private void btnAbrirImagem_Click(object sender, EventArgs e)
         {
             trackBarBrilho.Value = 100;
-            trackBarMatiz.Value = 0;
+            nUDmatiz.Value = 0;
+            valorMatiz = 0;
+            tbBrilho.Text = "100";
             openFileDialog.FileName = "";
             openFileDialog.Filter = "Arquivos de Imagem (*.jpg;*.gif;*.bmp;*.png;*.jpeg)|*.jpg;*.gif;*.bmp;*.png;*.jpeg";
 
@@ -134,16 +137,28 @@ namespace ProcessamentoImagens
         {
             Bitmap imgDest = new Bitmap(image);
             imageBitmap = (Bitmap)image;
+            tbBrilho.Text = trackBarBrilho.Value.ToString();
             Filtros.aumentar_reduzirBrilho(imageBitmap, imgDest, trackBarBrilho);
             pictBoxImg1.Image = imgDest;
+            imageBitmap = imgDest;
         }
 
-        private void trackBarMatiz_Scroll(object sender, EventArgs e)
+        private void tbBrilho_TextChanged(object sender, EventArgs e)
         {
-            Bitmap imgDest = new Bitmap(image);
-            imageBitmap = (Bitmap)image;
-            Filtros.alterarMatiz(imageBitmap, imgDest, trackBarMatiz);
-            pictBoxImg1.Image = imgDest;
+
+        }
+
+        private void tbRed_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void nUDmatiz_ValueChanged(object sender, EventArgs e)
+        {
+            int calculoMatiz = (int)nUDmatiz.Value - valorMatiz;
+            valorMatiz = (int)nUDmatiz.Value;
+            imageBitmap = Filtros.aumentar_reduzirMatiz(imageBitmap, calculoMatiz);
+            pictBoxImg1.Image = imageBitmap;
         }
 
         private void btnMiniatura_Click(object sender, EventArgs e)
