@@ -64,8 +64,8 @@ namespace ProcessamentoImagens
             imageBitmapSrc.UnlockBits(srcData);
             imageBitmapDest.UnlockBits(destData);
         }
-      
-        public static void aumentar_reduzirBrilho(Bitmap imageBitmap, Bitmap imageBitmapDest, TrackBar trackBar)
+
+        public static void aumentar_reduzirBrilho(Bitmap imageBitmap, Bitmap imageBitmapDest, TrackBar trackBar, int valorBrilho)
         {
             int width = imageBitmap.Width;
             int height = imageBitmap.Height;
