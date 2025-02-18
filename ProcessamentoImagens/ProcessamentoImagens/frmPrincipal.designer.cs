@@ -312,7 +312,22 @@
             // 
             // nUDmatiz
             // 
+            this.nUDmatiz.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
             this.nUDmatiz.Location = new System.Drawing.Point(1069, 73);
+            this.nUDmatiz.Maximum = new decimal(new int[] {
+            180,
+            0,
+            0,
+            0});
+            this.nUDmatiz.Minimum = new decimal(new int[] {
+            180,
+            0,
+            0,
+            -2147483648});
             this.nUDmatiz.Name = "nUDmatiz";
             this.nUDmatiz.Size = new System.Drawing.Size(120, 22);
             this.nUDmatiz.TabIndex = 135;
