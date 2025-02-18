@@ -150,6 +150,51 @@ namespace ProcessamentoImagens
             return newImage;
         }
 
+        public static Bitmap FiltrarPorFaixaMatiz(Bitmap image, int minHue, int maxHue)
+        {
+            Bitmap newImage = new Bitmap(image.Width, image.Height);
+            Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
+
+            BitmapData dataSrc = image.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+            BitmapData dataDst = newImage.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+
+            int bytes = Math.Abs(dataSrc.Stride) * image.Height;
+            byte[] pixelBuffer = new byte[bytes];
+            byte[] resultBuffer = new byte[bytes];
+
+            Marshal.Copy(dataSrc.Scan0, pixelBuffer, 0, bytes);
+            image.UnlockBits(dataSrc);
+
+            for (int i = 0; i < bytes; i += 3)
+            {
+                byte b = pixelBuffer[i];
+                byte g = pixelBuffer[i + 1];
+                byte r = pixelBuffer[i + 2];
+
+                float h, s, l;
+                RgbToHsl(Color.FromArgb(r, g, b), out h, out s, out l);
+
+                if (h >= minHue && h <= maxHue)
+                {
+                    resultBuffer[i] = b;
+                    resultBuffer[i + 1] = g;
+                    resultBuffer[i + 2] = r;
+                }
+                else
+                {
+                    byte gray = (byte)(r * 0.299 + g * 0.587 + b * 0.114);
+                    resultBuffer[i] = gray;
+                    resultBuffer[i + 1] = gray;
+                    resultBuffer[i + 2] = gray;
+                }
+            }
+
+            Marshal.Copy(resultBuffer, 0, dataDst.Scan0, bytes);
+            newImage.UnlockBits(dataDst);
+
+            return newImage;
+        }
+
         private static void RgbToHsl(Color color, out float h, out float s, out float l)
         {
             float r = color.R / 255f;

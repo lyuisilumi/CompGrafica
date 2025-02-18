@@ -14,6 +14,9 @@ namespace ProcessamentoImagens
         private Image image;
         private Bitmap imageBitmap;
         private int valorMatiz;
+        private int ultimoMinHue = 0;
+        private int ultimoMaxHue = 360;
+
 
         public frmPrincipal()
         {
@@ -172,6 +175,17 @@ namespace ProcessamentoImagens
             if (imageBitmap == null) return;
             FormMiniaturas formMiniaturas = new FormMiniaturas(imageBitmap);
             formMiniaturas.Show();
+        }
+
+        private void btnFiltrarMatiz_Click_Click(object sender, EventArgs e)
+        {
+            if (imageBitmap == null) return;
+
+            int minHue = (int)nUDMinHue.Value;
+            int maxHue = (int)nUDMaxHue.Value;
+
+            Bitmap filteredImage = Filtros.FiltrarPorFaixaMatiz(imageBitmap, minHue, maxHue);
+            pictBoxImg1.Image = filteredImage;
         }
     }
 }

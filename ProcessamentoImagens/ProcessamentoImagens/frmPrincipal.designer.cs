@@ -57,9 +57,16 @@
             this.tbBrilho = new System.Windows.Forms.TextBox();
             this.nUDmatiz = new System.Windows.Forms.NumericUpDown();
             this.btnMiniatura = new System.Windows.Forms.Button();
+            this.nUDMinHue = new System.Windows.Forms.NumericUpDown();
+            this.nUDMaxHue = new System.Windows.Forms.NumericUpDown();
+            this.btnFiltrarMatiz_Click = new System.Windows.Forms.Button();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictBoxImg1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBrilho)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUDmatiz)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUDMinHue)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUDMaxHue)).BeginInit();
             this.SuspendLayout();
             // 
             // pictBoxImg1
@@ -74,7 +81,7 @@
             // 
             // btnAbrirImagem
             // 
-            this.btnAbrirImagem.Location = new System.Drawing.Point(976, 24);
+            this.btnAbrirImagem.Location = new System.Drawing.Point(975, 11);
             this.btnAbrirImagem.Name = "btnAbrirImagem";
             this.btnAbrirImagem.Size = new System.Drawing.Size(101, 23);
             this.btnAbrirImagem.TabIndex = 106;
@@ -84,7 +91,7 @@
             // 
             // btnLimpar
             // 
-            this.btnLimpar.Location = new System.Drawing.Point(976, 52);
+            this.btnLimpar.Location = new System.Drawing.Point(975, 39);
             this.btnLimpar.Name = "btnLimpar";
             this.btnLimpar.Size = new System.Drawing.Size(101, 23);
             this.btnLimpar.TabIndex = 107;
@@ -94,7 +101,7 @@
             // 
             // btnLuminanciaSemDMA
             // 
-            this.btnLuminanciaSemDMA.Location = new System.Drawing.Point(1084, 24);
+            this.btnLuminanciaSemDMA.Location = new System.Drawing.Point(1083, 11);
             this.btnLuminanciaSemDMA.Name = "btnLuminanciaSemDMA";
             this.btnLuminanciaSemDMA.Size = new System.Drawing.Size(120, 23);
             this.btnLuminanciaSemDMA.TabIndex = 108;
@@ -270,7 +277,7 @@
             // 
             this.trackBarBrilho.LargeChange = 20;
             this.trackBarBrilho.Location = new System.Drawing.Point(519, 57);
-            this.trackBarBrilho.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.trackBarBrilho.Margin = new System.Windows.Forms.Padding(2);
             this.trackBarBrilho.Maximum = 200;
             this.trackBarBrilho.Name = "trackBarBrilho";
             this.trackBarBrilho.Size = new System.Drawing.Size(224, 45);
@@ -282,7 +289,7 @@
             // tbBrilho
             // 
             this.tbBrilho.Location = new System.Drawing.Point(716, 26);
-            this.tbBrilho.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbBrilho.Margin = new System.Windows.Forms.Padding(2);
             this.tbBrilho.Name = "tbBrilho";
             this.tbBrilho.ReadOnly = true;
             this.tbBrilho.Size = new System.Drawing.Size(48, 20);
@@ -297,7 +304,7 @@
             0,
             0});
             this.nUDmatiz.Location = new System.Drawing.Point(802, 59);
-            this.nUDmatiz.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nUDmatiz.Margin = new System.Windows.Forms.Padding(2);
             this.nUDmatiz.Maximum = new decimal(new int[] {
             180,
             0,
@@ -315,7 +322,7 @@
             // 
             // btnMiniatura
             // 
-            this.btnMiniatura.Location = new System.Drawing.Point(1084, 53);
+            this.btnMiniatura.Location = new System.Drawing.Point(1083, 40);
             this.btnMiniatura.Name = "btnMiniatura";
             this.btnMiniatura.Size = new System.Drawing.Size(120, 23);
             this.btnMiniatura.TabIndex = 134;
@@ -323,11 +330,78 @@
             this.btnMiniatura.UseVisualStyleBackColor = true;
             this.btnMiniatura.Click += new System.EventHandler(this.btnMiniatura_Click);
             // 
+            // nUDMinHue
+            // 
+            this.nUDMinHue.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nUDMinHue.Location = new System.Drawing.Point(975, 69);
+            this.nUDMinHue.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.nUDMinHue.Name = "nUDMinHue";
+            this.nUDMinHue.Size = new System.Drawing.Size(101, 20);
+            this.nUDMinHue.TabIndex = 136;
+            // 
+            // nUDMaxHue
+            // 
+            this.nUDMaxHue.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nUDMaxHue.Location = new System.Drawing.Point(1082, 69);
+            this.nUDMaxHue.Maximum = new decimal(new int[] {
+            360,
+            0,
+            0,
+            0});
+            this.nUDMaxHue.Name = "nUDMaxHue";
+            this.nUDMaxHue.Size = new System.Drawing.Size(121, 20);
+            this.nUDMaxHue.TabIndex = 137;
+            // 
+            // btnFiltrarMatiz_Click
+            // 
+            this.btnFiltrarMatiz_Click.Location = new System.Drawing.Point(1019, 93);
+            this.btnFiltrarMatiz_Click.Name = "btnFiltrarMatiz_Click";
+            this.btnFiltrarMatiz_Click.Size = new System.Drawing.Size(132, 23);
+            this.btnFiltrarMatiz_Click.TabIndex = 138;
+            this.btnFiltrarMatiz_Click.Text = "Filtrar";
+            this.btnFiltrarMatiz_Click.UseVisualStyleBackColor = true;
+            this.btnFiltrarMatiz_Click.Click += new System.EventHandler(this.btnFiltrarMatiz_Click_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(972, 92);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(24, 13);
+            this.label7.TabIndex = 139;
+            this.label7.Text = "Min";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(1176, 93);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(27, 13);
+            this.label8.TabIndex = 140;
+            this.label8.Text = "Max";
+            // 
             // frmPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1220, 608);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.btnFiltrarMatiz_Click);
+            this.Controls.Add(this.nUDMaxHue);
+            this.Controls.Add(this.nUDMinHue);
             this.Controls.Add(this.nUDmatiz);
             this.Controls.Add(this.tbBrilho);
             this.Controls.Add(this.btnMiniatura);
@@ -363,6 +437,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictBoxImg1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBrilho)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUDmatiz)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUDMinHue)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUDMaxHue)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -400,7 +476,11 @@
         private System.Windows.Forms.TextBox tbBrilho;
         private System.Windows.Forms.NumericUpDown nUDmatiz;
         private System.Windows.Forms.Button btnMiniatura;
-
+        private System.Windows.Forms.NumericUpDown nUDMinHue;
+        private System.Windows.Forms.NumericUpDown nUDMaxHue;
+        private System.Windows.Forms.Button btnFiltrarMatiz_Click;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
     }
 }
 
