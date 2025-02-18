@@ -54,8 +54,13 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.trackBarBrilho = new System.Windows.Forms.TrackBar();
+          
             this.tbBrilho = new System.Windows.Forms.TextBox();
             this.nUDmatiz = new System.Windows.Forms.NumericUpDown();
+
+            this.trackBarMatiz = new System.Windows.Forms.TrackBar();
+            this.btnMiniatura = new System.Windows.Forms.Button();
+          
             ((System.ComponentModel.ISupportInitialize)(this.pictBoxImg1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarBrilho)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUDmatiz)).BeginInit();
@@ -333,13 +338,29 @@
             this.nUDmatiz.TabIndex = 135;
             this.nUDmatiz.ValueChanged += new System.EventHandler(this.nUDmatiz_ValueChanged);
             // 
+            // button1
+            // 
+            this.btnMiniatura.Location = new System.Drawing.Point(1445, 65);
+            this.btnMiniatura.Margin = new System.Windows.Forms.Padding(4);
+            this.btnMiniatura.Name = "btnMiniatura";
+            this.btnMiniatura.Size = new System.Drawing.Size(160, 28);
+            this.btnMiniatura.TabIndex = 134;
+            this.btnMiniatura.Text = "Miniatura";
+            this.btnMiniatura.UseVisualStyleBackColor = true;
+            this.btnMiniatura.Click += new System.EventHandler(this.btnMiniatura_Click);
+            // 
             // frmPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1627, 748);
+
             this.Controls.Add(this.nUDmatiz);
             this.Controls.Add(this.tbBrilho);
+
+            this.Controls.Add(this.btnMiniatura);
+            this.Controls.Add(this.trackBarMatiz);
+
             this.Controls.Add(this.trackBarBrilho);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
@@ -406,8 +427,13 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TrackBar trackBarBrilho;
+
         private System.Windows.Forms.TextBox tbBrilho;
         private System.Windows.Forms.NumericUpDown nUDmatiz;
+
+        private System.Windows.Forms.TrackBar trackBarMatiz;
+        private System.Windows.Forms.Button btnMiniatura;
+
     }
 }
 
