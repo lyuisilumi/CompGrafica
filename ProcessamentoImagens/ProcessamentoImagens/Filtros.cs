@@ -17,8 +17,6 @@ namespace ProcessamentoImagens
         {
             int width = imageBitmapSrc.Width;
             int height = imageBitmapSrc.Height;
-
-            // Bloquear os bits das imagens para acesso direto à memória
             BitmapData srcData = imageBitmapSrc.LockBits(
                 new Rectangle(0, 0, width, height),
                 ImageLockMode.ReadOnly,
@@ -29,8 +27,8 @@ namespace ProcessamentoImagens
                 ImageLockMode.WriteOnly,
                 PixelFormat.Format24bppRgb);
 
-            int stride = srcData.Stride; // Largura real da linha de pixels (considera alinhamento de memória)
-            int bytesPerPixel = 3; // Formato 24bpp (RGB)
+            int stride = srcData.Stride;
+            int bytesPerPixel = 3;
 
             unsafe
             {
@@ -44,23 +42,17 @@ namespace ProcessamentoImagens
 
                     for (int x = 0; x < width; x++)
                     {
-                        // Os valores são armazenados em BGR (ordem invertida)
                         byte b = srcRow[x * bytesPerPixel];
                         byte g = srcRow[x * bytesPerPixel + 1];
                         byte r = srcRow[x * bytesPerPixel + 2];
-
-                        // Calcular o tom de cinza
                         byte gray = (byte)(r * 0.299 + g * 0.587 + b * 0.114);
 
-                        // Substituir valores no destino
                         destRow[x * bytesPerPixel] = gray;      // Azul (B)
                         destRow[x * bytesPerPixel + 1] = gray;  // Verde (G)
                         destRow[x * bytesPerPixel + 2] = gray;  // Vermelho (R)
                     }
                 }
             }
-
-            // Desbloquear os bits após processamento
             imageBitmapSrc.UnlockBits(srcData);
             imageBitmapDest.UnlockBits(destData);
         }
@@ -70,7 +62,6 @@ namespace ProcessamentoImagens
             int width = imageBitmap.Width;
             int height = imageBitmap.Height;
 
-            // Ajuste de brilho: mapeando 100 para sem alteração e valores abaixo de 100 para redução de brilho
             float ajusteBrilho = (float)(trackBar.Value - 100) / 100;  // Ajusta o brilho com base em 100 como base
 
             BitmapData srcData = imageBitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
@@ -122,7 +113,7 @@ namespace ProcessamentoImagens
             Bitmap newImage = new Bitmap(image.Width, image.Height);
             Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
 
-            // Bloqueia os bits da imagem original e da nova imagem
+            
             BitmapData dataSrc = image.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
             BitmapData dataDst = newImage.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
 
@@ -130,7 +121,7 @@ namespace ProcessamentoImagens
             byte[] pixelBuffer = new byte[bytes];
             byte[] resultBuffer = new byte[bytes];
 
-            // Copia os bytes da imagem para o buffer
+            
             Marshal.Copy(dataSrc.Scan0, pixelBuffer, 0, bytes);
             image.UnlockBits(dataSrc);
 
@@ -148,17 +139,11 @@ namespace ProcessamentoImagens
                 // Ajusta a matiz
                 h = (h + hueShift+360) % 360;
                 if (h < 0) h += 360;
-
-                // Converte de volta para RGB
                 Color newColor = HslToRgb(h, s, l);
-
-                // Armazena os novos valores no buffer de saída
                 resultBuffer[i] = newColor.B;
                 resultBuffer[i + 1] = newColor.G;
                 resultBuffer[i + 2] = newColor.R;
             }
-
-            // Copia os dados processados de volta para a nova imagem
             Marshal.Copy(resultBuffer, 0, dataDst.Scan0, bytes);
             newImage.UnlockBits(dataDst);
 
@@ -231,8 +216,5 @@ namespace ProcessamentoImagens
             if (t < 240) return p + (q - p) * (240 - t) / 60;
             return p;
         }
-
-
-
     }
 }

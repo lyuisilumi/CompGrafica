@@ -33,17 +33,31 @@ namespace ProcessamentoImagens
 
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                image = new Bitmap(openFileDialog.FileName); // Garante que image não será null
-                imageBitmap = new Bitmap(image); // Atualiza imageBitmap corretamente
+                image = new Bitmap(openFileDialog.FileName);
+                imageBitmap = new Bitmap(image);
                 pictBoxImg1.Image = imageBitmap;
-                pictBoxImg1.SizeMode = PictureBoxSizeMode.Zoom; // Mantém a proporção sem perda de qualidade
+                pictBoxImg1.SizeMode = PictureBoxSizeMode.Zoom; 
             }
         }
 
         private void btnLimpar_Click(object sender, EventArgs e)
         {
+            //pictBoxImg1.Image = null;
+            trackBarBrilho.Value = 100;
+            tbBrilho.Text = "100";
+            nUDmatiz.Value = 0; 
+            valorMatiz = 0;
+            tbRed.Text = "";
+            tbGreen.Text = "";
+            tbBlue.Text = "";
+            tbC.Text = "";
+            tbM.Text = "";
+            tbY.Text = "";
+            tbMatiz.Text = "";
+            tbSat.Text = "";
+            tbLum.Text = "";
             pictBoxImg1.Image = null;
-
+            imageBitmap = null;
         }
 
         private void btnLuminanciaSemDMA_Click(object sender, EventArgs e)
@@ -54,7 +68,7 @@ namespace ProcessamentoImagens
                 return;
             }
 
-            imageBitmap = new Bitmap(image); // Atualiza para garantir que temos um bitmap válido
+            imageBitmap = new Bitmap(image);
             Bitmap imgDest = new Bitmap(imageBitmap);
 
             Filtros.convert_to_gray(imageBitmap, imgDest);
@@ -77,7 +91,6 @@ namespace ProcessamentoImagens
                 int boxWidth = pictBoxImg1.Width;
                 int boxHeight = pictBoxImg1.Height;
 
-                // Pegando os limites visíveis da imagem dentro do PictureBox
                 float imageAspect = (float)imgWidth / imgHeight;
                 float boxAspect = (float)boxWidth / boxHeight;
 
@@ -85,19 +98,17 @@ namespace ProcessamentoImagens
 
                 if (imageAspect > boxAspect)
                 {
-                    // A imagem se ajusta na largura do PictureBox
                     drawWidth = boxWidth;
                     drawHeight = (int)(boxWidth / imageAspect);
                     offsetX = 0;
-                    offsetY = (boxHeight - drawHeight) / 2; // Centraliza verticalmente
+                    offsetY = (boxHeight - drawHeight) / 2;
                 }
                 else
                 {
-                    // A imagem se ajusta na altura do PictureBox
                     drawHeight = boxHeight;
                     drawWidth = (int)(boxHeight * imageAspect);
                     offsetY = 0;
-                    offsetX = (boxWidth - drawWidth) / 2; // Centraliza horizontalmente
+                    offsetX = (boxWidth - drawWidth) / 2;
                 }
 
                 // Convertendo as coordenadas do mouse para a escala da imagem original
@@ -110,17 +121,12 @@ namespace ProcessamentoImagens
                     tbRed.Text = pixelColor.R.ToString();
                     tbGreen.Text = pixelColor.G.ToString();
                     tbBlue.Text = pixelColor.B.ToString();
-
-                    // Conversão para CMY
                     int C = 255 - pixelColor.R;
                     int M = 255 - pixelColor.G;
                     int Y = 255 - pixelColor.B;
-
                     tbC.Text = C.ToString();
                     tbM.Text = M.ToString();
                     tbY.Text = Y.ToString();
-
-                    // Conversão para HSI (caso precise)
                     tbMatiz.Text = ((int)pixelColor.GetHue()).ToString();
                     tbSat.Text = ((int)(pixelColor.GetSaturation() * 100)).ToString();
                     tbLum.Text = ((int)(pixelColor.GetBrightness() * 255)).ToString();
@@ -163,10 +169,7 @@ namespace ProcessamentoImagens
 
         private void btnMiniatura_Click(object sender, EventArgs e)
         {
-            // Se a imagem não estiver carregada, não faz nada
             if (imageBitmap == null) return;
-
-            // Criando e exibindo o formulário de miniaturas
             FormMiniaturas formMiniaturas = new FormMiniaturas(imageBitmap);
             formMiniaturas.Show();
         }
